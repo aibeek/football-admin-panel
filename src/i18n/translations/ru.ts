@@ -187,7 +187,8 @@ export const ru = {
         haveAccount: "Уже есть аккаунт?",
         register: "Регистрация",
         login: "Вход",
-        logout: "Выйти"
+        logout: "Выйти",
+        loginAsGuest: "Просмотр как гость (только чтение)"
     },
     
     matches: {
@@ -480,6 +481,7 @@ export const ru = {
         minTeamsRequired: "Требуется минимум 2 команды"
     },
     common: {
+        or: "или",
         save: "Сохранить",
         saving: "Сохранение...",
         cancel: "Отмена",

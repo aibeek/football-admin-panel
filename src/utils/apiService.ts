@@ -1,4 +1,5 @@
 import { type AppError, ErrorHandler } from './errorHandler';
+import { useAuthStore } from '../store/auth';
 
 interface RetryOptions {
     maxAttempts?: number;

@@ -82,6 +82,11 @@ export interface TournamentCreateResponse {
     id: number;
 }
 
+export interface TournamentScheduleGenerationResponse {
+    tournamentId: number;
+    matchesCreated: number;
+}
+
 export interface TournamentErrorResponse {
     id: number;
 }

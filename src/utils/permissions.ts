@@ -94,54 +94,54 @@ export type Permission =
   | 'permissions.manage';
 
 // Роли системы
-export type RoleName = 'ADMIN' | 'PLAYER' | 'MANAGER' | 'COACH' | 'CONTENT_EDITOR' | 'ANALYST';
+export type RoleName = 'ADMIN' | 'PLAYER' | 'MANAGER' | 'COACH' | 'CONTENT_EDITOR' | 'ANALYST' | 'GUEST';
 
 // Конфигурация разрешений
 export const permissions: Record<Permission, RoleName[]> = {
   // Teams
-  'teams.view': ['ADMIN', 'MANAGER', 'COACH'],
+  'teams.view': ['ADMIN', 'MANAGER', 'COACH', 'GUEST'],
   'teams.create': ['ADMIN', 'MANAGER'],
   'teams.edit': ['ADMIN', 'MANAGER'],
   'teams.delete': ['ADMIN'],
   
   // Players
-  'players.view': ['ADMIN', 'MANAGER', 'COACH'],
+  'players.view': ['ADMIN', 'MANAGER', 'COACH', 'GUEST'],
   'players.create': ['ADMIN', 'MANAGER'],
   'players.edit': ['ADMIN', 'MANAGER', 'COACH'],
   'players.delete': ['ADMIN'],
   
   // Matches
-  'matches.view': ['ADMIN', 'MANAGER', 'COACH', 'ANALYST'],
+  'matches.view': ['ADMIN', 'MANAGER', 'COACH', 'ANALYST', 'GUEST'],
   'matches.create': ['ADMIN', 'MANAGER'],
   'matches.edit': ['ADMIN', 'MANAGER'],
   'matches.delete': ['ADMIN'],
   
   // Tournaments
-  'tournaments.view': ['ADMIN', 'MANAGER', 'COACH', 'ANALYST'],
+  'tournaments.view': ['ADMIN', 'MANAGER', 'COACH', 'ANALYST', 'GUEST'],
   'tournaments.create': ['ADMIN', 'MANAGER'],
   'tournaments.edit': ['ADMIN', 'MANAGER'],
   'tournaments.delete': ['ADMIN'],
   
   // Tournament Categories
-  'tournament-categories.view': ['ADMIN', 'MANAGER'],
+  'tournament-categories.view': ['ADMIN', 'MANAGER', 'GUEST'],
   'tournament-categories.create': ['ADMIN'],
   'tournament-categories.edit': ['ADMIN'],
   'tournament-categories.delete': ['ADMIN'],
   
   // Sport Clubs
-  'sport-clubs.view': ['ADMIN', 'MANAGER', 'COACH'],
+  'sport-clubs.view': ['ADMIN', 'MANAGER', 'COACH', 'GUEST'],
   'sport-clubs.create': ['ADMIN', 'MANAGER'],
   'sport-clubs.edit': ['ADMIN', 'MANAGER'],
   'sport-clubs.delete': ['ADMIN'],
   
   // Sport Types
-  'sport-types.view': ['ADMIN', 'MANAGER'],
+  'sport-types.view': ['ADMIN', 'MANAGER', 'GUEST'],
   'sport-types.create': ['ADMIN'],
   'sport-types.edit': ['ADMIN'],
   'sport-types.delete': ['ADMIN'],
   
   // Match Participants
-  'match-participants.view': ['ADMIN', 'MANAGER', 'COACH'],
+  'match-participants.view': ['ADMIN', 'MANAGER', 'COACH', 'GUEST'],
   'match-participants.create': ['ADMIN', 'MANAGER'],
   'match-participants.edit': ['ADMIN', 'MANAGER'],
   'match-participants.delete': ['ADMIN'],
@@ -154,31 +154,31 @@ export const permissions: Record<Permission, RoleName[]> = {
   'users.manage': ['ADMIN'],
   
   // Playgrounds
-  'playgrounds.view': ['ADMIN', 'MANAGER'],
+  'playgrounds.view': ['ADMIN', 'MANAGER', 'GUEST'],
   'playgrounds.create': ['ADMIN', 'MANAGER'],
   'playgrounds.edit': ['ADMIN', 'MANAGER'],
   'playgrounds.delete': ['ADMIN'],
   
   // Achievements
-  'achievements.view': ['ADMIN', 'MANAGER', 'COACH', 'PLAYER'],
+  'achievements.view': ['ADMIN', 'MANAGER', 'COACH', 'PLAYER', 'GUEST'],
   'achievements.create': ['ADMIN', 'MANAGER'],
   'achievements.edit': ['ADMIN', 'MANAGER'],
   'achievements.delete': ['ADMIN'],
   
   // Regions
-  'regions.view': ['ADMIN', 'MANAGER'],
+  'regions.view': ['ADMIN', 'MANAGER', 'GUEST'],
   'regions.create': ['ADMIN'],
   'regions.edit': ['ADMIN'],
   'regions.delete': ['ADMIN'],
   
   // Cities
-  'cities.view': ['ADMIN', 'MANAGER'],
+  'cities.view': ['ADMIN', 'MANAGER', 'GUEST'],
   'cities.create': ['ADMIN'],
   'cities.edit': ['ADMIN'],
   'cities.delete': ['ADMIN'],
   
   // Countries
-  'countries.view': ['ADMIN', 'MANAGER'],
+  'countries.view': ['ADMIN', 'MANAGER', 'GUEST'],
   'countries.create': ['ADMIN'],
   'countries.edit': ['ADMIN'],
   'countries.delete': ['ADMIN'],
@@ -189,7 +189,7 @@ export const permissions: Record<Permission, RoleName[]> = {
   'files.delete': ['ADMIN'],
   
   // News
-  'news.view': ['ADMIN', 'CONTENT_EDITOR'],
+  'news.view': ['ADMIN', 'CONTENT_EDITOR', 'GUEST'],
   'news.create': ['ADMIN', 'CONTENT_EDITOR'],
   'news.edit': ['ADMIN', 'CONTENT_EDITOR'],
   'news.delete': ['ADMIN'],

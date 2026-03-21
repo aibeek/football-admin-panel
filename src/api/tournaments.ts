@@ -1,6 +1,7 @@
 import type {
     CreateTournamentRequest,
     TournamentCreateResponse,
+    TournamentScheduleGenerationResponse,
     TournamentFilters,
     TournamentFullResponse,
     TournamentPaginatedResponse,
@@ -29,6 +30,11 @@ export const tournamentApi = {
 
     create: async (data: CreateTournamentRequest): Promise<TournamentCreateResponse> => {
         const response = await axiosInstance.post(`/tournaments`, data);
+        return response.data;
+    },
+
+    generateSchedule: async (id: number): Promise<TournamentScheduleGenerationResponse> => {
+        const response = await axiosInstance.post(`/tournaments/${id}/generate-schedule`);
         return response.data;
     },
 

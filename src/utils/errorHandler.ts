@@ -13,6 +13,14 @@ export class ErrorHandler {
     static handle(error: any, context?: string): AppError {
         console.error(`Error in ${context || 'unknown context'}:`, error);
 
+        // Guest mode intentionally blocks backend calls in read-only mode.
+        if (error?.code === 'GUEST_MODE_BLOCKED') {
+            return {
+                message: '',
+                code: 'GUEST_MODE_BLOCKED'
+            };
+        }
+
         // Handle Axios errors
         if (error.isAxiosError || error.response) {
             return this.handleApiError(error as AxiosError);
@@ -122,7 +130,14 @@ export class ErrorHandler {
     }
 
     static showError(error: AppError, context?: string): void {
+        if (error.code === 'GUEST_MODE_BLOCKED') {
+            return;
+        }
+
         const errorMessage = this.getDisplayMessage(error, context);
+        if (!errorMessage) {
+            return;
+        }
         toast.error(errorMessage);
     }
 
@@ -130,6 +145,8 @@ export class ErrorHandler {
         const contextPrefix = context ? `${context}: ` : '';
         
         switch (error.code) {
+            case 'GUEST_MODE_BLOCKED':
+                return '';
             case 'NETWORK_ERROR':
                 return 'Check your internet connection and try again.';
             case 'TIMEOUT_ERROR':

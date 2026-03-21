@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+const isGuestSession = (): boolean => {
+    return typeof window !== 'undefined' && localStorage.getItem('is_guest') === 'true';
+};
+
+const createGuestModeError = (endpoint?: string) => ({
+    code: 'GUEST_MODE_BLOCKED',
+    message: 'Guest mode read-only: backend request blocked',
+    endpoint
+});
+
 // Create axios instance with base URL
 const axiosInstance = axios.create({
     baseURL: 'https://sport-empire.kz/api/v1',
@@ -12,6 +22,12 @@ const axiosInstance = axios.create({
 // Add request interceptor for auth token
 axiosInstance.interceptors.request.use(
     (config) => {
+        // In guest mode we disable backend calls completely to avoid 401/403
+        // caused by locally generated guest tokens.
+        if (isGuestSession()) {
+            return Promise.reject(createGuestModeError(config.url));
+        }
+
         const token = localStorage.getItem('auth_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -31,6 +47,10 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
+        if (error?.code === 'GUEST_MODE_BLOCKED') {
+            return Promise.reject(error);
+        }
+
         // Handle the error case
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -69,6 +89,10 @@ const axiosInstanceDev = axios.create({
 // Add request interceptor for auth token
 axiosInstanceDev.interceptors.request.use(
     (config) => {
+        if (isGuestSession()) {
+            return Promise.reject(createGuestModeError(config.url));
+        }
+
         const token = localStorage.getItem('auth_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -88,6 +112,10 @@ axiosInstanceDev.interceptors.response.use(
         return response;
     },
     (error) => {
+        if (error?.code === 'GUEST_MODE_BLOCKED') {
+            return Promise.reject(error);
+        }
+
         // Handle the error case
         if (error.response) {
             // The request was made and the server responded with a status code

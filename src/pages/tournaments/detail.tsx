@@ -20,7 +20,15 @@ const TournamentDetailPage: React.FC = () => {
     const tournamentId = id ? parseInt(id) : -1;
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
-    const { currentTournament, isLoading: tournamentLoading, error: tournamentError, fetchTournament, updateTournament, deleteTournament } = useTournamentStore();
+    const {
+        currentTournament,
+        isLoading: tournamentLoading,
+        error: tournamentError,
+        fetchTournament,
+        updateTournament,
+        deleteTournament,
+        generateTournamentSchedule
+    } = useTournamentStore();
     const { fetchTeamsByIds } = useTeamStore();
     const { cities, currentCity, fetchCities, fetchCity } = useCityStore();
     const { sportTypes, currentSportType, fetchSportTypes, fetchSportType } = useSportTypeStore();
@@ -160,6 +168,14 @@ const TournamentDetailPage: React.FC = () => {
         }
     };
 
+    const handleGenerateSchedule = async () => {
+        if (tournamentId <= 0) return;
+        const created = await generateTournamentSchedule(tournamentId);
+        if (created !== null) {
+            loadTournament();
+        }
+    };
+
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
         try {
@@ -225,6 +241,17 @@ const TournamentDetailPage: React.FC = () => {
                         <h1 className="text-2xl sm:text-3xl font-bold">{currentTournament.name}</h1>
                     </div>
                     <div className="flex flex-wrap gap-2">
+                        {currentTournament.numberOfMatches === 0 && (
+                            <button
+                                onClick={handleGenerateSchedule}
+                                className="bg-blue-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md hover:bg-blue-500 transition-colors duration-200 flex items-center text-sm sm:text-base w-full sm:w-auto justify-center"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Generate schedule
+                            </button>
+                        )}
                         <button
                             onClick={() => setIsEditing(true)}
                             className="bg-gold text-darkest-bg px-3 py-1.5 sm:px-4 sm:py-2 rounded-md hover:bg-gold/90 transition-colors duration-200 flex items-center text-sm sm:text-base w-full sm:w-auto justify-center"

@@ -23,11 +23,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   fallback,
   redirectTo = '/auth'
 }) => {
-  const { hasPermission, hasAnyRole, hasAllRoles, isAuthenticated } = usePermissions();
+  const { hasPermission, hasAnyRole, hasAllRoles, isAuthenticated, isGuest } = usePermissions();
   
   // Проверяем аутентификацию
   if (!isAuthenticated()) {
     return <Navigate to={redirectTo} replace />;
+  }
+
+  // Запрещаем операции редактирования для гостей
+  const isWriteOperation = permission && (
+    permission.endsWith('.create') || 
+    permission.endsWith('.edit') || 
+    permission.endsWith('.delete') ||
+    permission.endsWith('.manage') ||
+    permission.endsWith('.upload') ||
+    permission.endsWith('.publish')
+  );
+
+  if (isGuest && isWriteOperation) {
+    return fallback ? <>{fallback}</> : <Navigate to="/dashboard" replace />;
   }
   
   // Проверяем разрешение
@@ -56,7 +70,21 @@ export const PermissionGate: React.FC<{
   requireAll?: boolean;
   fallback?: React.ReactNode;
 }> = ({ children, permission, roles, requireAll = false, fallback = null }) => {
-  const { hasPermission, hasAnyRole, hasAllRoles } = usePermissions();
+  const { hasPermission, hasAnyRole, hasAllRoles, isGuest } = usePermissions();
+  
+  // Запрещаем операции редактирования для гостей
+  const isWriteOperation = permission && (
+    permission.endsWith('.create') || 
+    permission.endsWith('.edit') || 
+    permission.endsWith('.delete') ||
+    permission.endsWith('.manage') ||
+    permission.endsWith('.upload') ||
+    permission.endsWith('.publish')
+  );
+
+  if (isGuest && isWriteOperation) {
+    return <>{fallback}</>;
+  }
   
   // Проверяем разрешение
   if (permission && !hasPermission(permission)) {

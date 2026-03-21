@@ -13,7 +13,7 @@ import {
  * Хук для работы с разрешениями пользователя
  */
 export function usePermissions() {
-  const { user } = useAuthStore();
+  const { user, isGuest } = useAuthStore();
   
   // Получаем роли пользователя из user (который является LoginResponse)
   const userRoles = useMemo(() => {
@@ -49,6 +49,7 @@ export function usePermissions() {
   return {
     userRoles,
     permissions,
+    isGuest,
     
     /**
      * Проверяет, есть ли у пользователя конкретное разрешение

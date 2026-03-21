@@ -9,6 +9,7 @@ import type {
 import { apiService } from '../utils/apiService';
 import { ErrorHandler } from '../utils/errorHandler';
 import { showToast } from '../utils/toast';
+import { useAuthStore } from './auth';
 
 interface TeamState {
     teams: TeamFullResponse[];
@@ -62,6 +63,21 @@ export const useTeamStore = create<TeamState>()((set, get) => ({
 
 
     fetchTeams: async (forceRefresh = false, page = 0, size = 10, filters?: TeamFilterParams) => {
+        // Skip API calls for guests - show empty list in read-only mode
+        const { isGuest } = useAuthStore.getState();
+        if (isGuest) {
+            set({
+                teams: [],
+                totalElements: 0,
+                totalPages: 0,
+                currentPage: page,
+                pageSize: size,
+                isLoading: false,
+                error: null
+            });
+            return;
+        }
+
         // Check if we already have teams loaded for the same page and avoid redundant requests
         const { teams, currentPage, pageSize, filters: currentFilters } = get();
 
@@ -127,6 +143,13 @@ export const useTeamStore = create<TeamState>()((set, get) => ({
     },
 
     fetchTeam: async (id: number) => {
+        // Skip API calls for guests
+        const { isGuest } = useAuthStore.getState();
+        if (isGuest) {
+            set({ currentTeam: null, isLoading: false });
+            return;
+        }
+
         // Prevent redundant requests
         const { currentTeam } = get();
         if (currentTeam && currentTeam.id === id) return;

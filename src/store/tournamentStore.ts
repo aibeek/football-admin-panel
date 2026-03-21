@@ -20,8 +20,9 @@ interface TournamentState {
 
     fetchTournaments: (forceRefresh?: boolean) => Promise<void>;
     fetchTournamentsWithFilters: (filters?: TournamentFilters) => Promise<void>;
-    fetchTournament: (id: number) => Promise<void>;
+    fetchTournament: (id: number, forceRefresh?: boolean) => Promise<void>;
     createTournament: (data: CreateTournamentRequest) => Promise<boolean>;
+    generateTournamentSchedule: (id: number) => Promise<number | null>;
     updateTournament: (id: number, data: UpdateTournamentRequest) => Promise<boolean>;
     deleteTournament: (id: number) => Promise<boolean>;
     clearError: () => void;
@@ -110,17 +111,17 @@ export const useTournamentStore = create<TournamentState>()((set, get) => ({
         set({ error: null });
     },
 
-    fetchTournament: async (id: number) => {
+    fetchTournament: async (id: number, forceRefresh = false) => {
         // Prevent redundant requests
         const { currentTournament } = get();
-        if (currentTournament && currentTournament.id === id) return;
+        if (!forceRefresh && currentTournament && currentTournament.id === id) return;
 
         set({ isLoading: true, error: null });
         try {
             const tournament = await apiService.execute(
                 () => tournamentApi.getById(id),
                 `fetchTournament_${id}`,
-                { enableCache: true, cacheTTL: 2 * 60 * 1000 } // Cache for 2 minutes
+                { enableCache: true, cacheTTL: 2 * 60 * 1000, forceRefresh } // Cache for 2 minutes
             );
             set({ currentTournament: tournament, isLoading: false });
         } catch (error: any) {
@@ -154,6 +155,30 @@ export const useTournamentStore = create<TournamentState>()((set, get) => ({
                 isLoading: false
             });
             return false;
+        }
+    },
+
+    generateTournamentSchedule: async (id: number) => {
+        set({ isLoading: true, error: null });
+        try {
+            const result = await apiService.execute(
+                () => tournamentApi.generateSchedule(id),
+                `generateTournamentSchedule_${id}`
+            );
+
+            apiService.clearCache([`fetchTournament_${id}`, 'fetchTournaments']);
+            await get().fetchTournament(id, true);
+
+            set({ isLoading: false });
+            showToast(`Generated ${result.matchesCreated} matches`, 'success');
+            return result.matchesCreated;
+        } catch (error: any) {
+            const errorMessage = ErrorHandler.handle(error);
+            set({
+                error: errorMessage.message,
+                isLoading: false
+            });
+            return null;
         }
     },
 

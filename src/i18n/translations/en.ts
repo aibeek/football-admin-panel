@@ -18,7 +18,8 @@ export const en = {
         haveAccount: "Already have an account?",
         register: "Register",
         login: "Login",
-        logout: "Logout"
+        logout: "Logout",
+        loginAsGuest: "View as Guest (Read-only)"
     },
     sidebar: {
         home: "Home",
@@ -627,6 +628,7 @@ export const en = {
         demographics: "Demographics"
     },
     common: {
+        or: "or",
         save: "Save",
         cancel: "Cancel",
         remove: "Remove",

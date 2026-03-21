@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth';
 import { authValidators, useFormValidation } from '../../utils/validation';
 import { formatPhoneDisplay, extractPhoneNumber } from '../../utils/phoneFormatter';
@@ -11,13 +12,16 @@ export const RegisterForm: React.FC = () => {
     const [displayPhone, setDisplayPhone] = useState('');
     const [password, setPassword] = useState('');
 
-    const { register, isLoading, error } = useAuthStore();
+    const { register, loginAsGuest, isLoading, error } = useAuthStore();
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     // Use the new validation system
     const { errors, validateField, validateForm, clearErrors } = useFormValidation(
         authValidators.register
-    );    const handleSubmit = async (e: React.FormEvent) => {
+    );
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Extract clean phone number for backend
@@ -31,7 +35,9 @@ export const RegisterForm: React.FC = () => {
                 // Form will reset and show success message via toast
             }
         }
-    };    const handleFieldChange = (field: 'firstname' | 'lastname' | 'phone' | 'password', value: string, setter: (value: string) => void) => {
+    };
+
+    const handleFieldChange = (field: 'firstname' | 'lastname' | 'phone' | 'password', value: string, setter: (value: string) => void) => {
         if (field === 'phone') {
             // Format for display
             const formatted = formatPhoneDisplay(value);
@@ -50,6 +56,11 @@ export const RegisterForm: React.FC = () => {
                 validateField(field, value);
             }
         }
+    };
+
+    const handleGuestLogin = () => {
+        loginAsGuest();
+        navigate('/dashboard');
     };
 
     return (
@@ -98,7 +109,9 @@ export const RegisterForm: React.FC = () => {
                         />
                         {errors.lastname && <p className="text-red-500 text-xs mt-1">{errors.lastname}</p>}
                     </div>
-                </div>                <div className="space-y-2">
+                </div>
+
+                <div className="space-y-2">
                     <label className="text-sm font-medium block" htmlFor="phone">
                         {t('auth.phone')}
                     </label>
@@ -144,6 +157,25 @@ export const RegisterForm: React.FC = () => {
                             {t('auth.creatingAccount')}
                         </span>
                     ) : t('auth.registerButton')}
+                </button>
+
+                <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-600"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-darkest-bg text-gray-400">{t('common.or')}</span>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={handleGuestLogin}
+                    disabled={isLoading}
+                    className="w-full px-4 py-2.5 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800/50 
+                   transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    👁️ {t('auth.loginAsGuest')}
                 </button>
             </form>
         </div>

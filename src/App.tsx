@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import DashboardLayout from './components/layout/DashboardLayout';
 import { ProtectedRoute as PermissionProtectedRoute } from './components/auth/ProtectedRoute';
 import ErrorBoundary from './components/ui/ErrorBoundary';
@@ -40,6 +40,7 @@ const UserDetailPage = React.lazy(() => import('./pages/users/detail'));
 const FilesPage = React.lazy(() => import('./pages/files'));
 const NewsPage = React.lazy(() => import('./pages/news'));
 const FavoritesPage = React.lazy(() => import('./pages/favorites'));
+const MobileApp = React.lazy(() => import('./mobile/app/App'));
 
 // Loading component for lazy-loaded routes
 const RouteLoadingSpinner: React.FC = () => (
@@ -62,14 +63,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <BrowserRouter
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true
-        }}
-      >
-        <GlobalLoadingIndicator />
-        <Routes>
+      <GlobalLoadingIndicator />
+      <Routes>
           {/* Auth routes */}
           <Route
             path="/auth"
@@ -90,6 +85,15 @@ const App: React.FC = () => {
                 <ErrorBoundary>
                   <PrivacyPolicyPage />
                 </ErrorBoundary>
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/*"
+            element={
+              <Suspense fallback={<RouteLoadingSpinner />}>
+                <MobileApp />
               </Suspense>
             }
           />
@@ -436,21 +440,8 @@ const App: React.FC = () => {
                 </Suspense>
               }
             />
-          </Route>        {/* Redirect from root to dashboard */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-          {/* 404 - Not Found Route (follows React Router v7 pattern) */}
-          <Route path="*" element={
-            <div className="flex flex-col items-center justify-center h-screen bg-darkest-bg">
-              <h1 className="text-3xl font-bold text-gold mb-4">404 - Page Not Found</h1>
-              <p className="text-white mb-8">The page you are looking for doesn't exist.</p>
-              <Link to="/dashboard" className="bg-gold text-darkest-bg px-4 py-2 rounded-md hover:bg-gold/90 transition-colors">
-                Return to Dashboard
-              </Link>
-            </div>
-          } />
-        </Routes>
-      </BrowserRouter>
+          </Route>
+      </Routes>
     </ErrorBoundary>
   );
 };
